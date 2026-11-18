@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SKIPPY: Automated RF Shielding-Effectiveness Test Bench · Landon Osborne</title>
+<meta name="description" content="Portfolio presentation: a Python/SCPI automated shielding-effectiveness test system, 100 MHz–6 GHz.">
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151c26; --line:#263040; --ink:#e6edf3; --muted:#9aa6b2;
+    --teal:#22b8a6; --amber:#ffb02e; --red:#ff4d5e;
+    --sans: Inter, "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#06080b;color:var(--ink);font-family:var(--sans);overflow:hidden}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  #stage{width:1280px;height:720px;position:relative;transform-origin:center center}
+  .slide{position:absolute;inset:0;background:var(--bg);border-radius:6px;padding:56px 72px 64px;display:none;flex-direction:column;overflow:hidden}
+  .slide.active{display:flex}
+  .kicker{color:var(--teal);font-size:14px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin:0 0 10px}
+  h1{font-size:60px;line-height:1.05;margin:0 0 18px;letter-spacing:-1px}
+  h2{font-size:38px;line-height:1.15;margin:0 0 26px;letter-spacing:-.5px}
+  p{font-size:21px;line-height:1.5;color:#c9d3dd;margin:0 0 14px}
+  ul{margin:0;padding-left:0;list-style:none}
+  li{font-size:20px;line-height:1.45;color:#c9d3dd;margin:0 0 14px;padding-left:26px;position:relative}
+  li::before{content:"";position:absolute;left:0;top:11px;width:10px;height:10px;border-radius:2px;background:var(--teal)}
+  b,strong{color:var(--ink)}
+  .muted{color:var(--muted)}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:44px;flex:1;min-height:0}
+  .cols.w{grid-template-columns:1.15fr .85fr}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px}
+  .card h3{margin:0 0 8px;font-size:19px;color:var(--ink)}
+  .card p{font-size:17px;margin:0;color:var(--muted)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .big{font-size:64px;font-weight:800;letter-spacing:-1.5px;line-height:1;color:var(--ink)}
+  .big.t{color:var(--teal)} .big.a{color:var(--amber)}
+  .stat .lbl{font-size:16px;color:var(--muted);margin-top:8px;line-height:1.35}
+  .eq{font-family:Georgia,"Times New Roman",serif;font-size:26px;color:var(--ink);margin:6px 0 14px}
+  code{font-family:var(--mono);font-size:.85em;background:#0b1016;border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:#cfe9e5}
+  img.fit{max-width:100%;max-height:100%;object-fit:contain;display:block;border-radius:10px}
+  .imgbox{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+  .tag{display:inline-block;font-size:13px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin:0 6px 6px 0}
+  .pass{color:#3ddc97;border-color:#245c45}.rev{color:var(--amber);border-color:#6b4d16}.fail{color:var(--red);border-color:#6b2730}
+  table{border-collapse:collapse;width:100%;font-size:17px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+  .foot{position:absolute;left:72px;right:72px;bottom:22px;display:flex;justify-content:space-between;font-size:13px;color:#5d6875}
+  .title-bg{background:radial-gradient(1200px 500px at 85% 15%, rgba(34,184,166,.16), transparent 60%), var(--bg)}
+  .rule{height:3px;width:120px;background:var(--teal);border-radius:2px;margin:26px 0}
+  #nav{position:fixed;bottom:14px;right:18px;display:flex;gap:8px;align-items:center;z-index:5;font-size:13px;color:#7d8796}
+  #nav button{background:#151c26;color:#c9d3dd;border:1px solid #263040;border-radius:8px;width:38px;height:32px;font-size:16px;cursor:pointer}
+  #nav button:hover{border-color:var(--teal)}
+  #bar{position:fixed;left:0;bottom:0;height:3px;background:var(--teal);transition:width .25s;z-index:6}
+  .foot .pn{visibility:hidden}
+  @media print{
+    .foot .pn{visibility:visible!important}
+    html,body{overflow:visible;background:#0d1117}
+    #viewport{position:static;display:block}
+    #stage{transform:none!important;width:1280px;height:auto}
+    .slide{display:flex!important;position:relative;height:720px;page-break-after:always;break-after:page;border-radius:0}
+    #nav,#bar{display:none}
+    @page{size:1280px 720px;margin:0}
+  }
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<!-- 1 Title -->
+<section class="slide title-bg">
+  <div style="margin-top:110px">
+    <p class="kicker">Portfolio · RF test automation</p>
+    <h1>SKIPPY<br><span style="color:var(--teal)">Automated RF shielding-effectiveness test bench</span></h1>
+    <div class="rule"></div>
+    <p style="font-size:24px"><b>Landon Osborne</b>, R&amp;D Project Coordinator, MOS Equipment (Mission Darkness / Generation Faraday)</p>
+    <p class="muted">2024–2026 · Python · SCPI/TCP · SQLite · LaTeX · 100 MHz–6 GHz</p>
+  </div>
+  <div class="foot"><span>Use ← → or click to navigate</span><span>github.com/landotosborne/skippy-se-test-bench</span></div>
+</section>
+
+<!-- 2 Problem -->
+<section class="slide">
+  <p class="kicker">The problem</p>
+  <h2>Shielding performance was measured by hand, one frequency at a time</h2>
+  <div class="cols">
+    <ul>
+      <li>MOS builds Faraday enclosures (bags, tents, forensic boxes) whose whole job is to <b>block RF</b>.</li>
+      <li>Verifying that meant tuning a generator and reading an analyzer manually: about <b>3 single-frequency readings per minute</b>.</li>
+      <li>No standard test plans, no uncertainty, no shared record of results, and no consistent report to put in front of a customer.</li>
+      <li>Product development and production QC both needed fast, <b>repeatable, defensible</b> numbers.</li>
+    </ul>
+    <div style="display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div class="card stat"><div class="big a">~3 / min</div><div class="lbl">hand measurements before, single frequency each</div></div>
+      <div class="card stat"><div class="big t">~1 sweep / s</div><div class="lbl">after: full-band sweeps of thousands of points, analyzed, stored and reported automatically</div></div>
+    </div>
+  </div>
+  <div class="foot"><span>SKIPPY · Landon Osborne</span><span class="pn">2</span></div>
+</section>
+
+<!-- 3 Method -->
+<section class="slide">
+  <p class="kicker">Measurement physics</p>
+  <h2>Two phases, one difference: SE = P<sub>ref</sub> − P<sub>shielded</sub></h2>
+  <div class="imgbox"><img class="fit" src="assets/test_setup.svg" alt="Two-phase SE test setup"></div>
+  <div class="foot"><span>Designed to be IEEE 299-compatible; checks against MIL-STD-188-125 HEMP SE values (not a certified facility)</span><span class="pn">3</span></div>
+</section>
+
+<!-- 4 Architecture -->
+<section class="slide" style="padding-top:36px">
+  <p class="kicker">System design</p>
+  <div class="imgbox"><img class="fit" src="assets/architecture.svg" alt="SKIPPY architecture"></div>
+  <div class="foot"><span>One shared library (<code>sigcore</code>) is the single source of truth for hardware, math, bands and config</span><span class="pn">4</span></div>
+</section>
+
+<!-- 5 Instrument control -->
+<section class="slide">
+  <p class="kicker">Instrument control</p>
+  <h2>Raw sockets and SCPI, built to survive a real bench</h2>
+  <div class="cols w">
+    <ul>
+      <li><b>Socket-level SCPI drivers</b> for a Signal Hound VSG60A generator and BB60C analyzer, behind one <code>SCPIInstrument</code> base class.</li>
+      <li><b>Automatic reference-level ranging</b>: a first read sets the analyzer's range before averaging, so strong and heavily shielded signals both land in its sweet spot.</li>
+      <li><b>N-sample marker averaging</b>, with the full 1001-point trace captured per sample, never at the expense of the primary reading.</li>
+      <li><b>Timeout → recalibrate → retry once</b>, and the generator is parked in a safe low-power state when a run ends or fails.</li>
+      <li>Calibrated settle times and hardware commands are <b>locked behind a written “do not modify” list</b>.</li>
+    </ul>
+    <div class="card" style="align-self:center">
+      <h3>One measurement point</h3>
+<pre style="font-family:var(--mono);font-size:14.5px;line-height:1.6;color:#cfe9e5;margin:10px 0 0;white-space:pre-wrap">:FREQ:CENT f Hz; SPAN 10kHz
+:SENS:POW:RF:RLEV −8      # probe
+:CALC:MARK:Y?             # → auto-range
+for i in 1..N:
+    :CALC:MARK:Y?         # peak power
+    :TRAC:DATA?           # full sweep → DB
+    :TRAC:CLE
+mean, σ  → ⊕ SNR term → P ± σ</pre>
+    </div>
+  </div>
+  <div class="foot"><span>SKIPPY · Landon Osborne</span><span class="pn">5</span></div>
+</section>
+
+<!-- 6 Uncertainty -->
+<section class="slide">
+  <p class="kicker">Measurement uncertainty</p>
+  <h2>Every number carries its error bar, and the verdict respects it</h2>
+  <div class="cols">
+    <div>
+      <div class="eq">σ<sub>P</sub> = √(σ<sub>stat</sub>² + σ<sub>SNR</sub>²)</div>
+      <p>σ<sub>stat</sub>: scatter across the N averaged samples.<br>σ<sub>SNR</sub>: 0.5 / 2.0 / 5.0 dB depending on the margin above a frequency-dependent noise-floor (DANL) model.</p>
+      <div class="eq">σ<sub>SE</sub> = √(σ<sub>ref</sub>² + σ<sub>shielded</sub>²)</div>
+      <p class="muted">Deep attenuation pushes the shielded reading toward the noise floor, which is exactly where the error grows. The model captures that.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="card"><span class="tag pass">PASS</span><p>worst point clears the threshold <b>by more than</b> its uncertainty</p></div>
+      <div class="card"><span class="tag rev">NEEDS REVIEW</span><p>threshold sits <b>inside</b> the worst point's error bar, so the run is flagged for a human instead of forced into a false pass or fail</p></div>
+      <div class="card"><span class="tag fail">FAIL</span><p>worst point misses the threshold <b>by more than</b> its uncertainty</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>SKIPPY · Landon Osborne</span><span class="pn">6</span></div>
+</section>
+
+<!-- 7 Band analysis -->
+<section class="slide">
+  <p class="kicker">Analysis</p>
+  <h2>Results people can act on, organized by the bands that matter</h2>
+  <div class="cols w">
+    <div class="imgbox"><img class="fit" src="assets/se_sweep.png" alt="SE vs frequency with band overlays"></div>
+    <ul style="align-self:center">
+      <li><b>7 RF bands</b>: cellular low/mid, GPS L1, 2.4 GHz ISM, 5G/C-band, Wi-Fi 5 and 6E.</li>
+      <li>Per band: average, minimum, <b>worst frequency</b>, uncertainty and verdict.</li>
+      <li><b>Integrated SE</b>: total received power across the band, integrated in <i>linear</i> units (mW·Hz) and then converted to dB. One narrow leak can't hide behind a good average.</li>
+      <li>Run verdict = worst band.</li>
+    </ul>
+  </div>
+  <div class="foot"><span>Figure: real SKIPPY output from an emulator run</span><span class="pn">7</span></div>
+</section>
+
+<!-- 8 Data system -->
+<section class="slide">
+  <p class="kicker">Data system</p>
+  <h2>Nothing is measured twice. Every run is stored, indexed and comparable.</h2>
+  <div class="grid2" style="flex:1;align-content:center">
+    <div class="card"><h3>Standard taxonomy</h3><p><code>&lt;root&gt;/&lt;Product&gt;/&lt;TestType&gt;/&lt;timestamp_serial&gt;/</code> with test plan, results, band CSV, plots, manifest, analysis and report.</p></div>
+    <div class="card"><h3>Full-waveform database</h3><p>Per-run SQLite <code>waveforms.db</code>: every averaged sweep (1001 points) stored as a compact float32 blob, about 4 KB per sweep, so new analyses can run on old tests.</p></div>
+    <div class="card"><h3>Historical comparison</h3><p>Central <code>run_index.db</code> with per-band summaries. Each new run is compared with the average and worst case of prior runs of the same product and test type.</p></div>
+    <div class="card"><h3>Portable and synced</h3><p>Searchable test index, run-vs-run overlay, <code>.setest</code> export/import, plus best-effort Google Drive upload and a monday.com index item per run.</p></div>
+  </div>
+  <div class="foot"><span>SKIPPY · Landon Osborne</span><span class="pn">8</span></div>
+</section>
+
+<!-- 9 Reporting -->
+<section class="slide">
+  <p class="kicker">Automatic reporting</p>
+  <h2>A finished, customer-ready report at the end of every run</h2>
+  <div class="cols">
+    <div class="imgbox"><img class="fit" src="assets/report_p1.png" alt="Report page 1" style="max-height:540px;border:1px solid var(--line)"></div>
+    <div style="display:flex;flex-direction:column;justify-content:center">
+      <ul>
+        <li>The analysis layer writes one structured <code>analysis.json</code>. The report <b>only renders</b> it and never re-derives a number.</li>
+        <li>Tokenized LaTeX template: executive summary, band table with integrated SE, full sweep, <b>per-band close-ups</b> and historical comparison.</li>
+        <li>Auto-detects <code>xelatex</code>, <code>tectonic</code> or <code>pdflatex</code>; without one it still writes a ready-to-compile bundle.</li>
+        <li>Generated <b>before</b> cloud sync, so the PDF is uploaded and linked with the run.</li>
+      </ul>
+      <p class="muted" style="font-size:16px">Sample shown: emulator demo, neutral branding. <a href="demo_report.pdf" style="color:var(--teal)">Full PDF ↗</a></p>
+    </div>
+  </div>
+  <div class="foot"><span>SKIPPY · Landon Osborne</span><span class="pn">9</span></div>
+</section>
+
+<!-- 10 Results -->
+<section class="slide">
+  <p class="kicker">Proof: emulator demo run</p>
+  <h2>End to end with no hands: sweep → database → analysis → report</h2>
+  <div class="cols">
+    <div>
+      <div class="grid2">
+        <div class="card stat"><div class="big t" style="font-size:52px">418</div><div class="lbl">measurement points per run (209 frequencies × 2 phases)</div></div>
+        <div class="card stat"><div class="big t" style="font-size:52px">1.25 M</div><div class="lbl">trace samples stored per run (1,254 sweeps × 1001)</div></div>
+      </div>
+      <p style="margin-top:22px;font-size:18px">0.7–5.9 GHz in 25 MHz steps, 3-sample averaging, against a simulated ~75 dB enclosure. Three runs build the history the report compares against.</p>
+    </div>
+    <table style="align-self:center">
+      <tr><th>Band</th><th style="text-align:right">Avg</th><th style="text-align:right">Min</th><th style="text-align:right">Int.</th><th>Verdict</th></tr>
+      <tr><td>Cellular 700–960</td><td class="n">75.0</td><td class="n">73.0</td><td class="n">75.1</td><td><span class="tag rev">REVIEW</span></td></tr>
+      <tr><td>GPS L1</td><td class="n">73.3</td><td class="n">73.3</td><td class="n">–</td><td><span class="tag rev">REVIEW</span></td></tr>
+      <tr><td>Cellular 1.7–2.2</td><td class="n">75.1</td><td class="n">72.3</td><td class="n">74.9</td><td><span class="tag rev">REVIEW</span></td></tr>
+      <tr><td>ISM 2.4 GHz</td><td class="n">74.4</td><td class="n">73.5</td><td class="n">74.6</td><td><span class="tag rev">REVIEW</span></td></tr>
+      <tr><td>5G / C-band</td><td class="n">75.3</td><td class="n">71.9</td><td class="n">75.0</td><td><span class="tag rev">REVIEW</span></td></tr>
+      <tr><td>Wi-Fi 5</td><td class="n">75.3</td><td class="n">71.6</td><td class="n">75.2</td><td><span class="tag rev">REVIEW</span></td></tr>
+    </table>
+  </div>
+  <p class="muted" style="font-size:16px;margin-top:10px">Every minimum is nominally above the 70 dB threshold, but each sits within 3–4 dB of uncertainty of it, so the honest call is <b>Needs Review</b>, not Pass.</p>
+  <div class="foot"><span>SE values in dB · threshold 70 dB</span><span class="pn">10</span></div>
+</section>
+
+<!-- 11 Reliability / dev -->
+<section class="slide">
+  <p class="kicker">Engineering for reliability</p>
+  <h2>Built so the bench is never the bottleneck</h2>
+  <div class="grid3" style="flex:1;align-content:center">
+    <div class="card"><h3>Instrument emulators</h3><p>SCPI servers that impersonate both instruments, so the full system runs and is tested with no hardware attached.</p></div>
+    <div class="card"><h3>Fault injection</h3><p>Live CLI to add latency, drop or corrupt a response, disconnect or time out, to prove the retry and error paths before they happen on the bench.</p></div>
+    <div class="card"><h3>Same code path</h3><p>One environment flag switches endpoints to localhost and settle times to zero. No forked “test version” of the driver.</p></div>
+    <div class="card"><h3>Graceful degradation</h3><p>Trace capture, report compile and cloud sync are all best-effort. None of them can void a valid measurement or lose a local run.</p></div>
+    <div class="card"><h3>Responsive GUI</h3><p>Hardware runs on a worker thread with queue messaging; the UI thread never touches the instruments.</p></div>
+    <div class="card"><h3>Guarded change process</h3><p>Built with AI coding agents under a written spec: SCPI sequences, timing and uncertainty math change only with my sign-off.</p></div>
+  </div>
+  <div class="foot"><span>SKIPPY · Landon Osborne</span><span class="pn">11</span></div>
+</section>
+
+<!-- 12 Impact -->
+<section class="slide title-bg">
+  <p class="kicker">Impact</p>
+  <h2>From hand readings to a production test system</h2>
+  <div class="cols">
+    <ul>
+      <li>Took MOS from <b>manual single-frequency readings</b> to automated 100 MHz–6 GHz sweeps with analysis, a database and reports.</li>
+      <li>Extended to <b>pre-shipment SE testing</b> of production units.</li>
+      <li>Used in product development to measure and compare SE across many designs and products.</li>
+      <li>I owned all of it: hardware chain, SE and error-propagation math, instrument control and software.</li>
+    </ul>
+    <div class="card" style="align-self:center">
+      <h3>What I'd add next</h3>
+      <p style="margin-top:8px">• Calibration traceability for the antennas and cables<br>• Automated regression tests against the emulators in CI<br>• Antenna-factor and path-loss corrections for formal IEEE 299 reports<br>• Multi-position runs for leak mapping</p>
+    </div>
+  </div>
+  <div class="foot"><span>Landon Osborne · Ltosborne46@gmail.com · github.com/landotosborne</span><span class="pn">12</span></div>
+</section>
+
+</div></div>
+<div id="bar"></div>
+<div id="nav"><span id="count"></span><button id="prev" aria-label="Previous slide">‹</button><button id="next" aria-label="Next slide">›</button></div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var stage = document.getElementById('stage');
+  var i = 0;
+  function fit(){
+    var s = Math.min(window.innerWidth/1280, window.innerHeight/720) * 0.96;
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  function show(n){
+    i = Math.max(0, Math.min(slides.length-1, n));
+    slides.forEach(function(el, k){ el.classList.toggle('active', k === i); });
+    document.getElementById('count').textContent = (i+1) + ' / ' + slides.length;
+    document.getElementById('bar').style.width = ((i+1)/slides.length*100) + '%';
+    if (history.replaceState) history.replaceState(null, '', '#' + (i+1));
+  }
+  document.addEventListener('keydown', function(e){
+    if (['ArrowRight','PageDown',' '].indexOf(e.key) > -1){ e.preventDefault(); show(i+1); }
+    if (['ArrowLeft','PageUp'].indexOf(e.key) > -1){ e.preventDefault(); show(i-1); }
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End') show(slides.length-1);
+  });
+  document.getElementById('next').onclick = function(){ show(i+1); };
+  document.getElementById('prev').onclick = function(){ show(i-1); };
+  stage.addEventListener('click', function(e){
+    if (e.target.closest('a')) return;
+    var r = stage.getBoundingClientRect();
+    show(e.clientX < r.left + r.width/3 ? i-1 : i+1);
+  });
+  var x0 = null;
+  document.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 40) show(dx < 0 ? i+1 : i-1);
+    x0 = null;
+  });
+  window.addEventListener('resize', fit);
+  fit();
+  var h = parseInt((location.hash || '').slice(1), 10);
+  show(isNaN(h) ? 0 : h-1);
+})();
+</script>
+</body>
+</html>

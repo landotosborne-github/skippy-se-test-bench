@@ -1,0 +1,142 @@
+{
+  "run_id": "20261118_110000",
+  "product": "Demo Enclosure",
+  "test_type": "Enclosure SE",
+  "serial": "DEMO-003",
+  "operator": "L. Osborne",
+  "timestamp": "2026-11-18T04:53:55.971543",
+  "threshold_db": 70.0,
+  "overall_verdict": "REVIEW",
+  "overall_verdict_label": "Needs Review",
+  "bands": [
+    {
+      "band_label": "Cellular 700-960",
+      "range_ghz": "0.70-0.96",
+      "n_points": 11,
+      "avg_se": 75.04,
+      "min_se": 72.99,
+      "max_se": 76.9,
+      "worst_freq_hz": 700000000.0,
+      "worst_unc": 3.09,
+      "integrated_se": 75.09,
+      "verdict": "REVIEW",
+      "verdict_label": "Needs Review"
+    },
+    {
+      "band_label": "GPS L1 1.565-1.585",
+      "range_ghz": "1.56-1.58",
+      "n_points": 1,
+      "avg_se": 73.29,
+      "min_se": 73.29,
+      "max_se": 73.29,
+      "worst_freq_hz": 1575000000.0,
+      "worst_unc": 3.57,
+      "integrated_se": null,
+      "verdict": "REVIEW",
+      "verdict_label": "Needs Review"
+    },
+    {
+      "band_label": "Cellular 1.7-2.2",
+      "range_ghz": "1.71-2.20",
+      "n_points": 20,
+      "avg_se": 75.06,
+      "min_se": 72.33,
+      "max_se": 76.85,
+      "worst_freq_hz": 1825000000.0,
+      "worst_unc": 3.51,
+      "integrated_se": 74.87,
+      "verdict": "REVIEW",
+      "verdict_label": "Needs Review"
+    },
+    {
+      "band_label": "ISM 2.4 GHz",
+      "range_ghz": "2.40-2.50",
+      "n_points": 5,
+      "avg_se": 74.43,
+      "min_se": 73.53,
+      "max_se": 75.82,
+      "worst_freq_hz": 2500000000.0,
+      "worst_unc": 3.95,
+      "integrated_se": 74.56,
+      "verdict": "REVIEW",
+      "verdict_label": "Needs Review"
+    },
+    {
+      "band_label": "5G/C-band 3.3-4.2",
+      "range_ghz": "3.30-4.20",
+      "n_points": 37,
+      "avg_se": 75.3,
+      "min_se": 71.9,
+      "max_se": 78.92,
+      "worst_freq_hz": 3825000000.0,
+      "worst_unc": 4.01,
+      "integrated_se": 74.96,
+      "verdict": "REVIEW",
+      "verdict_label": "Needs Review"
+    },
+    {
+      "band_label": "Wi-Fi 5 (5.15-5.85)",
+      "range_ghz": "5.15-5.85",
+      "n_points": 29,
+      "avg_se": 75.32,
+      "min_se": 71.59,
+      "max_se": 78.86,
+      "worst_freq_hz": 5375000000.0,
+      "worst_unc": 4.02,
+      "integrated_se": 75.18,
+      "verdict": "REVIEW",
+      "verdict_label": "Needs Review"
+    }
+  ],
+  "historical": [
+    {
+      "band_label": "Cellular 700-960",
+      "this_avg_se": 75.04,
+      "hist_avg_se": 75.02,
+      "hist_worst_se": 70.61,
+      "n_prior_runs": 2,
+      "delta_vs_hist_avg": 0.02
+    },
+    {
+      "band_label": "GPS L1 1.565-1.585",
+      "this_avg_se": 73.29,
+      "hist_avg_se": 77.16,
+      "hist_worst_se": 75.95,
+      "n_prior_runs": 2,
+      "delta_vs_hist_avg": -3.87
+    },
+    {
+      "band_label": "Cellular 1.7-2.2",
+      "this_avg_se": 75.06,
+      "hist_avg_se": 75.38,
+      "hist_worst_se": 71.97,
+      "n_prior_runs": 2,
+      "delta_vs_hist_avg": -0.32
+    },
+    {
+      "band_label": "ISM 2.4 GHz",
+      "this_avg_se": 74.43,
+      "hist_avg_se": 74.97,
+      "hist_worst_se": 71.22,
+      "n_prior_runs": 2,
+      "delta_vs_hist_avg": -0.53
+    },
+    {
+      "band_label": "5G/C-band 3.3-4.2",
+      "this_avg_se": 75.3,
+      "hist_avg_se": 75.14,
+      "hist_worst_se": 71.22,
+      "n_prior_runs": 2,
+      "delta_vs_hist_avg": 0.16
+    },
+    {
+      "band_label": "Wi-Fi 5 (5.15-5.85)",
+      "this_avg_se": 75.32,
+      "hist_avg_se": 75.07,
+      "hist_worst_se": 72.07,
+      "n_prior_runs": 2,
+      "delta_vs_hist_avg": 0.25
+    }
+  ],
+  "integrated_se_total": 74.97
+}

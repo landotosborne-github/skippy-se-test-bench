@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" xmlns:c2pa="http://c2pa.org/manifest">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7d8796"/>
+    </marker>
+    <style>
+      .bg{fill:#0d1117}
+      .lane{fill:#121821;stroke:#232b36;stroke-width:1}
+      .box{fill:#18202b;stroke:#2f3a48;stroke-width:1.2}
+      .hot{fill:#0f2a2e;stroke:#22b8a6;stroke-width:1.4}
+      .t{fill:#e6edf3;font-size:15px;font-weight:600}
+      .s{fill:#9aa6b2;font-size:12px}
+      .lt{fill:#22b8a6;font-size:12px;font-weight:700;letter-spacing:1.5px}
+      .ln{stroke:#7d8796;stroke-width:1.4;fill:none;marker-end:url(#a)}
+      .dash{stroke-dasharray:5 4}
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="760" rx="14"/>
+  <text x="40" y="44" fill="#e6edf3" font-size="22" font-weight="700">SKIPPY system architecture</text>
+  <text x="40" y="68" class="s">Python 3 · ~6k lines · sigcore library shared by GUI, analysis and reporting</text>
+
+  <!-- Lane labels -->
+  <rect class="lane" x="30" y="90" width="1140" height="120" rx="10"/>
+  <text x="48" y="112" class="lt">OPERATOR INTERFACE</text>
+  <rect class="lane" x="30" y="222" width="1140" height="120" rx="10"/>
+  <text x="48" y="244" class="lt">ORCHESTRATION</text>
+  <rect class="lane" x="30" y="354" width="1140" height="128" rx="10"/>
+  <text x="48" y="376" class="lt">INSTRUMENT CONTROL</text>
+  <rect class="lane" x="30" y="494" width="1140" height="236" rx="10"/>
+  <text x="48" y="516" class="lt">ANALYSIS · STORAGE · OUTPUTS</text>
+
+  <!-- GUI -->
+  <rect class="box" x="60" y="126" width="250" height="70" rx="8"/>
+  <text x="76" y="152" class="t">Control panel</text>
+  <text x="76" y="172" class="s">presets · sweep/CSV plans · validation</text>
+  <text x="76" y="188" class="s">product / test type / serial fields</text>
+  <rect class="box" x="330" y="126" width="250" height="70" rx="8"/>
+  <text x="346" y="152" class="t">Live console + status LEDs</text>
+  <text x="346" y="172" class="s">color-coded log · instrument probes</text>
+  <rect class="box" x="600" y="126" width="250" height="70" rx="8"/>
+  <text x="616" y="152" class="t">Plot panel</text>
+  <text x="616" y="172" class="s">SE vs. frequency · error bars</text>
+  <text x="616" y="188" class="s">run-vs-run comparison overlay</text>
+  <rect class="box" x="870" y="126" width="270" height="70" rx="8"/>
+  <text x="886" y="152" class="t">Test history browser</text>
+  <text x="886" y="172" class="s">search index · load · compare</text>
+  <text x="886" y="188" class="s">.setest export / import</text>
+
+  <!-- Orchestration -->
+  <rect class="hot" x="60" y="258" width="520" height="70" rx="8"/>
+  <text x="76" y="284" class="t">TestRunner (background thread)</text>
+  <text x="76" y="304" class="s">two-phase run: reference → install DUT → shielded</text>
+  <text x="76" y="320" class="s">queue.Queue messaging, so the GUI never blocks · cancel · VSG safe state</text>
+  <rect class="box" x="600" y="258" width="540" height="70" rx="8"/>
+  <text x="616" y="284" class="t">Emulator mode  (SIGNAL_ANALYZER_MODE=emulator)</text>
+  <text x="616" y="304" class="s">same code path, endpoints → localhost, timing → 0</text>
+  <text x="616" y="320" class="s">start_dev_env.py launches emulators + GUI</text>
+
+  <!-- Instruments -->
+  <rect class="box" x="60" y="390" width="250" height="78" rx="8"/>
+  <text x="76" y="416" class="t">SCPIInstrument base</text>
+  <text x="76" y="436" class="s">TCP socket · timeouts · log callback</text>
+  <text x="76" y="452" class="s">context-managed connect/disconnect</text>
+  <rect class="box" x="330" y="390" width="250" height="78" rx="8"/>
+  <text x="346" y="416" class="t">VSGControl  →  VSG60A</text>
+  <text x="346" y="436" class="s">frequency · power · output · recal</text>
+  <text x="346" y="452" class="s">SCPI over TCP :5025</text>
+  <rect class="hot" x="600" y="390" width="270" height="78" rx="8"/>
+  <text x="616" y="416" class="t">BBControl  →  BB60C</text>
+  <text x="616" y="436" class="s">auto ref-level · N-sample marker averaging</text>
+  <text x="616" y="452" class="s">full-trace capture · retry + recalibrate</text>
+  <rect class="box" x="890" y="390" width="250" height="78" rx="8"/>
+  <text x="906" y="416" class="t">SCPI emulators</text>
+  <text x="906" y="436" class="s">VSG + BB60C servers with fault</text>
+  <text x="906" y="452" class="s">injection: delay/drop/malformed/timeout</text>
+
+  <!-- Analysis row 1 -->
+  <rect class="hot" x="60" y="530" width="250" height="86" rx="8"/>
+  <text x="76" y="556" class="t">SE + uncertainty</text>
+  <text x="76" y="576" class="s">SE = P_ref − P_shielded</text>
+  <text x="76" y="592" class="s">σ_stat ⊕ SNR tier (DANL model)</text>
+  <text x="76" y="608" class="s">quadrature propagation</text>
+  <rect class="hot" x="330" y="530" width="250" height="86" rx="8"/>
+  <text x="346" y="556" class="t">Band analysis</text>
+  <text x="346" y="576" class="s">7 RF bands, cellular through Wi-Fi 5/6E</text>
+  <text x="346" y="592" class="s">integrated SE (linear-power trapezoid)</text>
+  <text x="346" y="608" class="s">Pass / Needs Review / Fail</text>
+  <rect class="box" x="600" y="530" width="270" height="86" rx="8"/>
+  <text x="616" y="556" class="t">Per-run storage</text>
+  <text x="616" y="576" class="s">&lt;root&gt;/&lt;Product&gt;/&lt;TestType&gt;/&lt;ts_serial&gt;/</text>
+  <text x="616" y="592" class="s">waveforms.db: every 1001-pt sweep (float32)</text>
+  <text x="616" y="608" class="s">manifest.json · analysis.json · CSVs</text>
+  <rect class="box" x="890" y="530" width="250" height="86" rx="8"/>
+  <text x="906" y="556" class="t">Central run index</text>
+  <text x="906" y="576" class="s">run_index.db (SQLite)</text>
+  <text x="906" y="592" class="s">history by Product + Test Type</text>
+  <text x="906" y="608" class="s">avg / worst comparison per band</text>
+
+  <!-- Outputs -->
+  <rect class="box" x="60" y="636" width="520" height="76" rx="8"/>
+  <text x="76" y="662" class="t">SigReport: automatic PDF report</text>
+  <text x="76" y="682" class="s">tokenized LaTeX template · band table · per-band close-ups · history</text>
+  <text x="76" y="698" class="s">auto-detects xelatex / tectonic / pdflatex, skips gracefully if none</text>
+  <rect class="box" x="600" y="636" width="540" height="76" rx="8"/>
+  <text x="616" y="662" class="t">Cloud sync (best-effort, never blocks the run)</text>
+  <text x="616" y="682" class="s">Google Drive upload via service account · monday.com GraphQL index item</text>
+  <text x="616" y="698" class="s">secrets kept out of git (secrets.json, tracked template only)</text>
+
+  <!-- Arrows -->
+  <path class="ln" d="M185 196 L185 258"/>
+  <path class="ln" d="M455 328 L455 390"/>
+  <path class="ln" d="M520 328 L700 390"/>
+  <path class="ln dash" d="M870 328 L990 390"/>
+  <path class="ln" d="M310 429 L330 429"/>
+  <path class="ln" d="M580 429 L600 429"/>
+  <path class="ln" d="M735 468 L735 530"/>
+  <path class="ln" d="M185 468 L185 530"/>
+  <path class="ln" d="M310 573 L330 573"/>
+  <path class="ln" d="M580 573 L600 573"/>
+  <path class="ln" d="M870 573 L890 573"/>
+  <path class="ln" d="M455 616 L455 636"/>
+  <path class="ln" d="M870 616 L870 636"/>
+  <path class="ln dash" d="M580 296 L725 196"/>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTplMmRmYTUxYS0xYmNhLTQyYzEtYmNmMi1kY2FkMDhmZGFhMTYAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaGlpL0Ca6iTOuArdBSnbNeYAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDowN2ZhY2NmNS0xNWJjLTQ5M2YtYTg5Zi0xYmY2N2U2NTU2MmVscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoioZcaJPz7G69YPXUU6J8aQAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggi+jOHfq0BlPtSOIt42Dt/d0MzJmgF5YirUau6m1Af/2kZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaHEcGkb90LrbkIWpK8slSDgAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIESXoKoMH2tR68rQKPQ36XDQjBmQ9naG2UfoiSGG2kjuZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GR0gZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOmUyZGZhNTFhLTFiY2EtNDJjMS1iY2YyLWRjYWQwOGZkYWExNi9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjdmODUyNmUwLTM4ZTQtNDAzOC1hNjYwLTRmOGYwN2I5ZWM5YnJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCCL6M4d+rQGU+1I4i3jYO393QzMmaAXliKtRq7qbUB//aJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggVVU010UmlxpPJE+RPoN2O7tjWomm4VA+gd2sfUFQY0SiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggB/w/JmFbruBo50p2gBO7P070sPJWMtqetCPJWNW+KyR0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQGPBEiJMUTWVwzIAums/m6TVa3MI2dPA73iqdHE0h+Q+FVmgohxdLKGH57ZEKkduCUtXP4mK+xZJXQx23IbyqSw=</c2pa:manifest></metadata></svg>
