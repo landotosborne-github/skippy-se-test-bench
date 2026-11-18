@@ -8,6 +8,14 @@ SKIPPY is the Python test system I designed and built to measure how well RF shi
 
 Before SKIPPY, SE was measured by hand at about **3 single-frequency readings per minute**. SKIPPY replaced that with automated full-band sweeps, roughly **one sweep of thousands of points per second**, plus analysis, a database and a finished report with no manual steps. It was later extended to **pre-shipment SE testing of production units**.
 
+| | Before SKIPPY | With SKIPPY |
+| --- | --- | --- |
+| Method | Manual, one frequency at a time | Automated swept measurement |
+| Speed | About 3 single-frequency readings per minute | About one full-band sweep per second |
+| Points per sweep | 1 | Thousands |
+| Coverage | Spot frequencies | 100 MHz – 6 GHz continuous |
+| Output | Hand-recorded numbers | Analysis, charts, compliance report and database record for every run |
+
 > **About this repository.** The source code is proprietary to my former employer and is kept in a private repository, shared with their permission. This public repo is a portfolio overview. All figures and sample outputs here come from the real program running against its bundled **instrument emulators**, so no customer or product test data is published.
 
 ---
@@ -29,6 +37,22 @@ I owned the whole system: the transmit/receive hardware chain, the SE and error-
 | **Dev tooling** | SCPI emulators for both instruments with fault injection (delay, dropped/malformed responses, disconnects, timeouts), and an emulator mode that runs the same code path with zero settle time. |
 
 ![Architecture](docs/assets/architecture.svg)
+
+### Signal flow
+
+```mermaid
+flowchart LR
+    GUI["Test-plan GUI<br/>presets, parameters, progress"] --> CTRL["Python controller<br/>socket SCPI"]
+    CTRL -- "SCPI over socket" --> SG["Signal generator<br/>+ transmit antenna"]
+    SG -. "RF through enclosure wall" .-> SA
+    subgraph DUT["Enclosure under test"]
+        SA["Spectrum analyzer<br/>+ receive antenna"]
+    end
+    CTRL -- "SCPI over socket" --> SA
+    SA --> ANA["SE + uncertainty math<br/>analysis and plots"]
+    ANA --> REP["Compliance report"]
+    ANA --> DB[("Results database")]
+```
 
 ## Measurement method
 
